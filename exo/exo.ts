@@ -55,6 +55,12 @@ module BABYLON {
 
             this.camera = new FreeCamera('freeCamera', new Vector3(15, 15, 15), this.scene);
             this.camera.attachControl(this._canvas);
+            this.camera.position.y = 100
+            this.camera.ellipsoid.y = 10
+            this.camera.maxZ = 100000;
+            this.camera.checkCollisions = true;
+            this.camera.applyGravity = true;
+            console.log(this.camera)
         }
 
         private _initLights(): void {
@@ -64,10 +70,12 @@ module BABYLON {
         private _initGeometries(): void {
             this.ground = Mesh.CreateGround('ground', 512, 512, 1, this.scene);
             this.ground.isPickable = true;
+            this.ground.checkCollisions = true;
 
             this.cube = Mesh.CreateBox('box', 10, this.scene);
             this.cube.position.y = -10;
             this.cube.isPickable = true;
+            this.cube.checkCollisions = true
             const cubeSize = 10;
             const pos = new Vector3(0, -cubeSize/2, 0)
             for(let i = 0; i < this.size; i++) {
@@ -80,11 +88,12 @@ module BABYLON {
                 }
                 pos.x -= (this.size - i) * cubeSize / 2
             }
-
             
-
+            
+            
             this.ball = Mesh.CreateSphere("sphere", 40, 20, this.scene); 
             this.ball.position = new Vector3(100, 20, 150)
+            this.ball.checkCollisions = true
 
             const std = new StandardMaterial('std', this.scene);
             std.diffuseTexture = new Texture('../assets/maki.jpg', this.scene);
@@ -109,7 +118,7 @@ module BABYLON {
         }
 
         private _initPhysics(): void {
-            this.scene.enablePhysics(new Vector3(0, -20, 0), new CannonJSPlugin());
+            this.scene.enablePhysics(new Vector3(0, -30, 0), new CannonJSPlugin());
 
             this.ground.physicsImpostor = new PhysicsImpostor(this.ground, PhysicsImpostor.BoxImpostor, {
                 mass: 0
@@ -122,7 +131,7 @@ module BABYLON {
             let instances = this.cube.instances
             for(let i = 0; i < instances.length; i++) {
                 instances[i].physicsImpostor = new PhysicsImpostor(instances[i], PhysicsImpostor.BoxImpostor, {
-                    mass: 3
+                    mass: 5
                 });
             }
         }
@@ -138,7 +147,7 @@ module BABYLON {
 
                 if (data.pickInfo.pickedMesh === this.ball && !this.alreadyClicked) {
                     this.alreadyClicked = true;
-                    this.ball.applyImpulse(data.pickInfo.ray.direction.multiplyByFloats(1200, 1200, 1200), data.pickInfo.pickedPoint);
+                    this.ball.applyImpulse(data.pickInfo.ray.direction.multiplyByFloats(2000, 2000, 2000), data.pickInfo.pickedPoint);
                 }
             });
         }

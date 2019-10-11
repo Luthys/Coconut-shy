@@ -38,6 +38,12 @@ var BABYLON;
             this.scene = new BABYLON.Scene(this.engine);
             this.camera = new BABYLON.FreeCamera('freeCamera', new BABYLON.Vector3(15, 15, 15), this.scene);
             this.camera.attachControl(this._canvas);
+            this.camera.position.y = 100;
+            this.camera.ellipsoid.y = 10;
+            this.camera.maxZ = 100000;
+            this.camera.checkCollisions = true;
+            this.camera.applyGravity = true;
+            console.log(this.camera);
         };
         Chan.prototype._initLights = function () {
             var light = new BABYLON.PointLight('pointLight', new BABYLON.Vector3(15, 15, 15), this.scene);
@@ -45,9 +51,11 @@ var BABYLON;
         Chan.prototype._initGeometries = function () {
             this.ground = BABYLON.Mesh.CreateGround('ground', 512, 512, 1, this.scene);
             this.ground.isPickable = true;
+            this.ground.checkCollisions = true;
             this.cube = BABYLON.Mesh.CreateBox('box', 10, this.scene);
             this.cube.position.y = -10;
             this.cube.isPickable = true;
+            this.cube.checkCollisions = true;
             var cubeSize = 10;
             var pos = new BABYLON.Vector3(0, -cubeSize / 2, 0);
             for (var i = 0; i < this.size; i++) {
@@ -62,6 +70,7 @@ var BABYLON;
             }
             this.ball = BABYLON.Mesh.CreateSphere("sphere", 40, 20, this.scene);
             this.ball.position = new BABYLON.Vector3(100, 20, 150);
+            this.ball.checkCollisions = true;
             var std = new BABYLON.StandardMaterial('std', this.scene);
             std.diffuseTexture = new BABYLON.Texture('../assets/maki.jpg', this.scene);
             this.cube.material = std;
@@ -79,7 +88,7 @@ var BABYLON;
             //          std.reflectionTexture.coordinatesMode = Texture.INVCUBIC_MODE;
         };
         Chan.prototype._initPhysics = function () {
-            this.scene.enablePhysics(new BABYLON.Vector3(0, -20, 0), new BABYLON.CannonJSPlugin());
+            this.scene.enablePhysics(new BABYLON.Vector3(0, -30, 0), new BABYLON.CannonJSPlugin());
             this.ground.physicsImpostor = new BABYLON.PhysicsImpostor(this.ground, BABYLON.PhysicsImpostor.BoxImpostor, {
                 mass: 0
             });
@@ -89,7 +98,7 @@ var BABYLON;
             var instances = this.cube.instances;
             for (var i = 0; i < instances.length; i++) {
                 instances[i].physicsImpostor = new BABYLON.PhysicsImpostor(instances[i], BABYLON.PhysicsImpostor.BoxImpostor, {
-                    mass: 3
+                    mass: 5
                 });
             }
         };
@@ -103,7 +112,7 @@ var BABYLON;
                 }
                 if (data.pickInfo.pickedMesh === _this.ball && !_this.alreadyClicked) {
                     _this.alreadyClicked = true;
-                    _this.ball.applyImpulse(data.pickInfo.ray.direction.multiplyByFloats(1200, 1200, 1200), data.pickInfo.pickedPoint);
+                    _this.ball.applyImpulse(data.pickInfo.ray.direction.multiplyByFloats(2000, 2000, 2000), data.pickInfo.pickedPoint);
                 }
             });
         };
